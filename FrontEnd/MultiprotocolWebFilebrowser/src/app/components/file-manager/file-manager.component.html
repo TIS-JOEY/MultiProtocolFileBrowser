@@ -1,0 +1,46 @@
+<mat-toolbar>
+  <mat-icon *ngIf="canNavigateUp" class="pointer" (click)="navigateUp()">arrow_back</mat-icon>
+  <span style="margin-left: 8px">{{currentPath || 'Files'}}</span>
+  <span class="spacer"></span>
+  <mat-icon class="pointer" (click)="openCreateFolderDialog()">create_new_folder</mat-icon>
+</mat-toolbar>
+
+<div class="container" fxFlex fxLayout="row" fxLayoutAlign="space-between stretch">
+  <div class="content" fxFlex fxLayout="row">
+    <mat-grid-list cols="8" rowHeight="100px" fxFlex>
+      <mat-grid-tile *ngFor="let fileNode of fileNodes" class=file-or-folder>
+        <span [matMenuTriggerFor]="rootMenu" [matMenuTriggerData]="{fileNode: fileNode}" #menuTrigger="matMenuTrigger"></span>
+        <div fxLayout="column" fxLayoutAlign="space-between center" (click)="navigate(fileNode)" (contextmenu)="openMenu($event, menuTrigger)">
+          <mat-icon color="primary" class="file-or-folder-icon pointer" *ngIf="fileNode.isDir">folder</mat-icon>
+          <mat-icon color="primary" class="file-or-folder-icon pointer" *ngIf="!fileNode.isDir">insert_drive_file</mat-icon>
+          <span>{{fileNode.name}}</span>
+        </div>
+      </mat-grid-tile>
+    </mat-grid-list>
+  </div>
+</div>
+
+<mat-menu #rootMenu="matMenu" [overlapTrigger]="false">
+  <ng-template matMenuContent let-element="fileNode">
+    <button mat-menu-item [matMenuTriggerFor]="moveToMenu" [matMenuTriggerData]="{self: fileNode}">
+      <mat-icon>open_with</mat-icon>
+      <span>Move To</span>
+    </button>
+    <button mat-menu-item (click)="openRenameFileNodeDialog(fileNode)">
+      <mat-icon>edit</mat-icon>
+      <span>Rename</span>
+    </button>
+    <button mat-menu-item (click)="deleteFileNode(fileNode)">
+      <mat-icon>delete</mat-icon>
+      <span>Delete</span>
+    </button>
+  </ng-template>
+</mat-menu>
+
+<mat-menu #moveToMenu="matMenu">
+  <ng-template matMenuContent let-self="self">
+    <ng-container *ngFor="let fileNode of fileNodes">
+      <button *ngIf="fileNode.isDir && fileNode.id !== self.id" mat-menu-item (click)="moveFileNode(self, fileNode)">{{fileNode.name}}</button>
+    </ng-container>
+  </ng-template>
+</mat-menu>
