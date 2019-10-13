@@ -10,41 +10,58 @@ import { BehaviorSubject } from 'rxjs';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   public fileNodes: Observable<FileNode []>;
   private responseBody: ResponseBody;
   private querySubject: BehaviorSubject<FileNode[]>;
+  private serviceName: string;
+  private applicationId: string = '123';
 
   constructor(public nasService: NasService) {}
 
-  currentNode: FileNode ;
   currentPath: string;
   canNavigateUp = false;
 
-  ngOnInit() {
-    this.currentPath = '/Users/joey/';
+  getServiceName(serviceName: string) {
+    this.serviceName = serviceName;
+    this.currentPath = '/Users/joey/Documents';
     this.updateFileNodeQuery();
   }
 
-  addFolder(folder: { name: string }) {
-    this.updateFileNodeQuery();
+  addFolder(targetName: string) {
+    this.nasService.createDir(this.serviceName, this.applicationId, this.currentPath + '/' + targetName).subscribe(
+      data => {
+        console.log(data);
+        this.updateFileNodeQuery();
+      },
+      err => {
+        console.error(err);
+      }
+    );
   }
 
-  removeFileNode(fileNode: FileNode) {
-    this.nasService.delete(fileNode.id);
-    this.updateFileNodeQuery();
+  deleteFileNode(targetPath: string) {
+    this.nasService.deleteFileNode(this.serviceName, this.applicationId, targetPath).subscribe(
+      data => {
+        console.log(data);
+        this.updateFileNodeQuery();
+      },
+      err => {
+        console.error(err);
+      }
+    );
   }
 
-  navigateToFolder(fileNode: FileNode) {
-    this.currentNode = fileNode;
-    this.currentPath = fileNode.path;
-    this.updateFileNodeQuery();
-    this.canNavigateUp = true;
-  }
-
-  navigateUp() {
-    this.currentPath = this.currentNode.parentPath;
-    this.updateFileNodeQuery();
+  renameFileNode(res: any) {
+    this.nasService.renameFileNode(this.serviceName, this.applicationId, res.sourcePath, res.targetPath).subscribe(
+      data => {
+        console.log(data);
+        this.updateFileNodeQuery();
+      },
+      err => {
+        console.error(err);
+      }
+    );
   }
 
   moveFileNode(event: { fileNode: FileNode; moveTo: FileNode }) {
@@ -54,16 +71,10 @@ export class AppComponent implements OnInit {
     */
   }
 
-  renameFileNode(fileNode: FileNode) {
-    this.nasService.update(fileNode.id, { name: fileNode.name });
-    this.updateFileNodeQuery();
-  }
-
   updateFileNodeQuery() {
-    this.nasService.listChildFileNodes(this.currentPath).subscribe(
+    this.nasService.listChildFileNodes(this.serviceName, this.applicationId, this.currentPath).subscribe(
       data => {
         const result: FileNode[] = [];
-        console.log(data.result[0]);
         data.result.forEach(element => {
           result.push(element);
         });
@@ -78,6 +89,17 @@ export class AppComponent implements OnInit {
     );
   }
 
+  navigateToFolder(targetPath: string) {
+    this.currentPath = targetPath;
+    this.updateFileNodeQuery();
+    this.canNavigateUp = true;
+  }
+
+  navigateUp() {
+    this.currentPath = this.popFromPath(this.currentPath);
+    this.updateFileNodeQuery();
+  }
+
   pushToPath(path: string, folderName: string) {
     let p = path ? path : '';
     p += `${folderName}/`;
@@ -87,7 +109,7 @@ export class AppComponent implements OnInit {
   popFromPath(path: string) {
     let p = path ? path : '';
     let split = p.split('/');
-    split.splice(split.length - 2, 1);
+    split.splice(split.length - 1, 1);
     p = split.join('/');
     return p;
   }

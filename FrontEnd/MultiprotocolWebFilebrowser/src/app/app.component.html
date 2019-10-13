@@ -1,7 +1,8 @@
 <div style="padding: 100px; height: 100%; box-sizing: border-box;">
+  <button mat-raised-button color="primary" (click) = "getServiceName('localDrive')">Local Drive</button>
   <mat-card style="height: 100%; box-sizing: border-box; padding:0">
     <app-file-manager [fileNodes]="fileNodes | async" [currentPath]="currentPath" [canNavigateUp]="canNavigateUp" (folderAdded)="addFolder($event)"
-      (fileNodeRemoved)="removeFileNode($event)" (navigatedDown)="navigateToFolder($event)" (navigatedUp)="navigateUp()" (fileNodeRenamed)="renameFileNode($event)"
+      (fileNodeDeleted)="deleteFileNode($event)" (navigatedDown)="navigateToFolder($event)" (navigatedUp)="navigateUp()" (fileNodeRenamed)="renameFileNode($event)"
       (fileNodeMoved)="moveFileNode($event)">
     </app-file-manager>
   </mat-card>

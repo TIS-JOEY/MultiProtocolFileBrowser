@@ -13,15 +13,16 @@
         <div fxLayout="column" fxLayoutAlign="space-between center" (click)="navigate(fileNode)" (contextmenu)="openMenu($event, menuTrigger)">
           <mat-icon color="primary" class="file-or-folder-icon pointer" *ngIf="fileNode.isDir">folder</mat-icon>
           <mat-icon color="primary" class="file-or-folder-icon pointer" *ngIf="!fileNode.isDir">insert_drive_file</mat-icon>
-          <span>{{fileNode.name}}</span>
+          <span style="font-size:12px;">{{fileNode.name}}</span>
         </div>
+        <br>
       </mat-grid-tile>
     </mat-grid-list>
   </div>
 </div>
 
 <mat-menu #rootMenu="matMenu" [overlapTrigger]="false">
-  <ng-template matMenuContent let-element="fileNode">
+  <ng-template matMenuContent let-fileNode="fileNode">
     <button mat-menu-item [matMenuTriggerFor]="moveToMenu" [matMenuTriggerData]="{self: fileNode}">
       <mat-icon>open_with</mat-icon>
       <span>Move To</span>

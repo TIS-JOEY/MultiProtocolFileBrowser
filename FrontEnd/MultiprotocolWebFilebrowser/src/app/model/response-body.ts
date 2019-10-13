@@ -1,6 +1,6 @@
 import { FileNode } from './file-node';
 
-export class ResponseBody {
+export interface ResponseBody {
   resultCode?: number;
   resultMessage?: string;
   result?: FileNode[];

@@ -1,4 +1,4 @@
-export class RequestBody {
+export interface RequestBody {
   sourcePath?: string;
   targetPath?: string;
   targetName?: string;

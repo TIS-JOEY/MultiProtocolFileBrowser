@@ -18,20 +18,20 @@ export class FileManagerComponent {
   @Input() canNavigateUp: string;
   @Input() currentPath: string;
 
-  @Output() folderAdded = new EventEmitter<{ name: string }>();
-  @Output() fileNodeRemoved = new EventEmitter<FileNode>();
-  @Output() fileNodeRenamed = new EventEmitter<FileNode>();
+  @Output() folderAdded = new EventEmitter<string>();
+  @Output() fileNodeDeleted = new EventEmitter<string>();
+  @Output() fileNodeRenamed = new EventEmitter<{ sourcePath: string, targetPath: string }>();
   @Output() fileNodeMoved = new EventEmitter<{ fileNode: FileNode; moveTo: FileNode }>();
-  @Output() navigatedDown = new EventEmitter<FileNode>();
+  @Output() navigatedDown = new EventEmitter<string>();
   @Output() navigatedUp = new EventEmitter();
 
   deleteFileNode(fileNode: FileNode) {
-    this.fileNodeRemoved.emit(fileNode);
+    this.fileNodeDeleted.emit(fileNode.path);
   }
 
   navigate(fileNode: FileNode) {
     if (fileNode.isDir) {
-      this.navigatedDown.emit(fileNode);
+      this.navigatedDown.emit(fileNode.path);
     }
   }
 
@@ -47,7 +47,7 @@ export class FileManagerComponent {
     const dialogRef = this.dialog.open(FolderCreateDialogComponent);
     dialogRef.afterClosed().subscribe(res => {
       if (res) {
-        this.folderAdded.emit({ name: res });
+        this.folderAdded.emit(res);
       }
     });
   }
@@ -56,8 +56,7 @@ export class FileManagerComponent {
     const dialogRef = this.dialog.open(FileNodeRenameDialogComponent);
     dialogRef.afterClosed().subscribe(res => {
       if (res) {
-        fileNode.name = res;
-        this.fileNodeRenamed.emit(fileNode);
+        this.fileNodeRenamed.emit({ sourcePath: fileNode.path, targetPath: fileNode.parentPath + '/' + res });
       }
     });
   }
