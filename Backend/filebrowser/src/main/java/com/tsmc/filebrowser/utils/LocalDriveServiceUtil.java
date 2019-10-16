@@ -11,6 +11,8 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.text.SimpleDateFormat;
 
+import org.springframework.lang.Nullable;
+
 import com.tsmc.filebrowser.domain.FileNode;
 
 public class LocalDriveServiceUtil {
@@ -32,6 +34,29 @@ public class LocalDriveServiceUtil {
 		fileNode.setSize(String.valueOf(basicFileAttr.size()));
 		
 		return fileNode;
+	}
+	
+	public static String addInfixIndex2Filename(String filename) {
+		int extensionLocation = filename.lastIndexOf(".");
+		if(extensionLocation==-1) {
+			filename = filename.substring(0, extensionLocation) + " (1)" + filename.substring(extensionLocation);
+		} else {
+			filename += "(1)";
+		}
+		
+		return filename;	
+		
+	}
+	
+	public static String addInfixIndex2Filename(String filename, int duplicateIndex) {
+		int extensionLocation = filename.lastIndexOf(".");
+		if(extensionLocation==-1) {
+			filename = filename.substring(0, extensionLocation) + " (1)" + filename.substring(extensionLocation);
+		} else {
+			filename += "("+ duplicateIndex + ")";
+		}
+		
+		return filename;	
 	}
 	
 	public static void deleteDir(String targetPath) throws IOException {

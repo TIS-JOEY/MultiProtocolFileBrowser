@@ -12,18 +12,18 @@ public class RequestInfo {
 	
 	private String targetName;
 	
-	private List<String> sourcePaths;
+	private String[] sourcePaths;
 	
-	private List<String> targetPaths;
+	private String[] targetPaths;
 	
-	private List<MultipartFile> multipartFiles;
+	private MultipartFile[] multipartFiles;
 	
 	public RequestInfo() {
 		
 	}
 
-	public RequestInfo(String sourcePath, String targetPath, String targetName, List<String> sourcePaths,
-			List<String> targetPaths, List<MultipartFile> multipartFiles) {
+	public RequestInfo(String sourcePath, String targetPath, String targetName, String[] sourcePaths,
+			String[] targetPaths, MultipartFile[] multipartFiles) {
 		super();
 		this.sourcePath = sourcePath;
 		this.targetPath = targetPath;
@@ -56,30 +56,31 @@ public class RequestInfo {
 	public void setTargetName(String targetName) {
 		this.targetName = targetName;
 	}
-	
-	public List<String> getSourcePaths() {
+
+	public String[] getSourcePaths() {
 		return sourcePaths;
 	}
 
-	public void setSourcePaths(List<String> sourcePaths) {
+	public void setSourcePaths(String[] sourcePaths) {
 		this.sourcePaths = sourcePaths;
 	}
 
-	public List<String> getTargetPaths() {
+	public String[] getTargetPaths() {
 		return targetPaths;
 	}
 
-	public void setTargetPaths(List<String> targetPaths) {
+	public void setTargetPaths(String[] targetPaths) {
 		this.targetPaths = targetPaths;
 	}
 
-	public List<MultipartFile> getMultipartFiles() {
+	public MultipartFile[] getMultipartFiles() {
 		return multipartFiles;
 	}
 
-	public void setMultipartFiles(List<MultipartFile> multipartFiles) {
+	public void setMultipartFiles(MultipartFile[] multipartFiles) {
 		this.multipartFiles = multipartFiles;
 	}
+
 	
 	
 	

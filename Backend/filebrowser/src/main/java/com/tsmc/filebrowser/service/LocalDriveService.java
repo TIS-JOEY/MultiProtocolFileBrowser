@@ -43,18 +43,34 @@ public class LocalDriveService {
 
 	}
 
-	public void renameFileNode(String applicationId, String sourcePath, String targetPath) throws Exception {
+	public void renameFileNodes(String applicationId, String[] sourcePaths, String targetName) throws Exception {
 
 		logger.info(String.format("[%s] call service [%s] start...", applicationId, "renameFileNode"));
+		
+		int duplicateIndex = 1;
+		
+		for(String sourcePath: sourcePaths) {
+			File source = new File(sourcePath);
+			
+			if (!source.exists()) {
+				throw new Exception();
+			}
+			
+			File target = new File(sourcePath + targetName);
+			
+			while(target.exists()) {
+				LocalDriveServiceUtil.addInfixIndex2Filename(targetName, duplicateIndex);
+				target = new File(sourcePath + targetName);
+				duplicateIndex+=1;
+			}
 
-		File source = new File(sourcePath);
-		File target = new File(targetPath);
-
-		boolean result = source.renameTo(target);
-		if (result == false) {
-			// Failed to rename a file
-			throw new Exception("Request Failed");
+			boolean result = source.renameTo(target);
+			if (result == false) {
+				// Failed to rename a file
+				throw new Exception("Request Failed");
+			}
 		}
+		
 		
 		logger.info(String.format("[%s] call service [%s] complete", applicationId, "renameFileNode"));
 
@@ -99,9 +115,9 @@ public class LocalDriveService {
 	public void createDir(String applicationId, String targetPath) throws Exception {
 
 		logger.info(String.format("[%s] call service [%s] start...", applicationId, "createDir"));
-
+		System.out.println(targetPath);
 		File target = new File(targetPath);
-
+		
 		// if not exists
 		if (!target.exists()) {
 			boolean result = target.mkdir();
@@ -135,19 +151,31 @@ public class LocalDriveService {
 		return byteArrayResource;
 
 	}
-	public void copyFileNode(String applicationId, String sourcePath, String targetPath) throws IOException {
+	public void copyFileNodes(String applicationId, String[] sourcePaths, String targetPath) throws IOException {
 		
 		logger.info(String.format("[%s] call service [%s] start...", applicationId, "copyFileNode"));
-
-		File source = new File(sourcePath);
-		File target = new File(targetPath);
 		
-		try {
-			LocalDriveServiceUtil.copyFildeNode(source, target);
-		}catch(IOException ex) {
-			logger.error(String.format("[%s] call service [%s] failed", applicationId, "copyFileNode"), ex);
-			throw ex;
+		for(String sourcePath: sourcePaths) {
+			File source = new File(sourcePath);
+			String targetName = source.getName();
+			File target = new File(targetPath + targetName);
+			
+			int duplicateIndex = 1;
+			while(target.exists()) {
+				String filename = LocalDriveServiceUtil.addInfixIndex2Filename(targetName, duplicateIndex);
+				target = new File(targetPath + filename);
+			}
+			
+			try {
+				LocalDriveServiceUtil.copyFildeNode(source, target);
+			}catch(IOException ex) {
+				logger.error(String.format("[%s] call service [%s] failed", applicationId, "copyFileNode"), ex);
+				throw ex;
+			}
 		}
+
+		
+		
 		
 		logger.info(String.format("[%s] call service [%s] complete!", applicationId, "copyFileNode"));
 		

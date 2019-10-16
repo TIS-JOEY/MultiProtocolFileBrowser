@@ -52,34 +52,26 @@ public class LocalDriveController {
 	}
 
 	@PutMapping(path = "/localDrive/{application-id}/fileNodes/name")
-	public ResponseEntity<ResultBody> renameFileNode(@PathVariable("application-id") String applicationId,
+	public ResponseEntity<ResultBody> renameFileNodes(@PathVariable("application-id") String applicationId,
 			@RequestBody RequestInfo requestBody) throws Exception {
-
-		localDriveService.renameFileNode(applicationId, requestBody.getSourcePath(), requestBody.getTargetPath());
-
+		
+		localDriveService.renameFileNodes(applicationId, requestBody.getSourcePaths(), requestBody.getTargetName());
 		return ResponseEntity.status(HttpStatus.OK).body(ResultBody.success());
 
 	}
 
 	@PutMapping(path = "/localDrive/{application-id}/fileNodes/location")
-	public List<ResponseEntity<ResultBody>> moveFileNodes(@PathVariable("application-id") String applicationId,
+	public ResponseEntity<ResultBody> moveFileNodes(@PathVariable("application-id") String applicationId,
 			@RequestBody RequestInfo requestBody) throws Exception {
-		List<ResponseEntity<ResultBody>> responses = new ArrayList<ResponseEntity<ResultBody>>();
-
+		
+		String targetPath = requestBody.getTargetPath();
 		for (String sourcePath : requestBody.getSourcePaths()) {
-			responses.add(_moveFileNode(applicationId, sourcePath, requestBody.getTargetPath()));
+			localDriveService.moveFileNode(applicationId, sourcePath, targetPath);
 		}
-
-		return responses;
-	}
-
-	public ResponseEntity<ResultBody> _moveFileNode(String applicationId, String sourcePath, String targetPath)
-			throws Exception {
-
-		localDriveService.moveFileNode(applicationId, sourcePath, targetPath);
 
 		return ResponseEntity.status(HttpStatus.OK).body(ResultBody.success());
 	}
+
 
 	@DeleteMapping(path = "/localDrive/{application-id}/fileNodes")
 	public List<ResponseEntity<ResultBody>> deleteFileNodes(@PathVariable("application-id") String applicationId,
@@ -103,8 +95,8 @@ public class LocalDriveController {
 	@PostMapping(path = "/localDrive/{application-id}/fileNodes/dir")
 	public ResponseEntity<ResultBody> createDir(@PathVariable("application-id") String applicationId,
 			@RequestBody RequestInfo requestBody) throws Exception {
-
-		localDriveService.createDir(applicationId, requestBody.getTargetName());
+		System.out.println(requestBody);
+		localDriveService.createDir(applicationId, requestBody.getTargetPath());
 
 		return ResponseEntity.status(HttpStatus.OK).body(ResultBody.success());
 	}
@@ -117,11 +109,11 @@ public class LocalDriveController {
 
 		localDriveService.createDir(applicationId, requestBody.getTargetPath());
 
-		List<String> targetPaths = requestBody.getTargetPaths();
-		List<MultipartFile> multipartFiles = requestBody.getMultipartFiles();
+		String[] targetPaths = requestBody.getTargetPaths();
+		MultipartFile[] multipartFiles = requestBody.getMultipartFiles();
 
-		for (int i = 0; i < targetPaths.size(); i++) {
-			responses.add(_uploadFile(applicationId, targetPaths.get(i), multipartFiles.get(i)));
+		for (int i = 0; i < targetPaths.length; i++) {
+			responses.add(_uploadFile(applicationId, targetPaths[i], multipartFiles[i]));
 		}
 
 		return responses;
@@ -134,11 +126,11 @@ public class LocalDriveController {
 
 		List<ResponseEntity<ResultBody>> responses = new ArrayList<ResponseEntity<ResultBody>>();
 
-		List<String> targetPaths = requestBody.getTargetPaths();
-		List<MultipartFile> multipartFiles = requestBody.getMultipartFiles();
+		String[] targetPaths = requestBody.getTargetPaths();
+		MultipartFile[] multipartFiles = requestBody.getMultipartFiles();
 
-		for (int i = 0; i < targetPaths.size(); i++) {
-			responses.add(_uploadFile(applicationId, targetPaths.get(i), multipartFiles.get(i)));
+		for (int i = 0; i < targetPaths.length; i++) {
+			responses.add(_uploadFile(applicationId, targetPaths[i], multipartFiles[i]));
 		}
 
 		return responses;
@@ -176,28 +168,17 @@ public class LocalDriveController {
 	}
 
 	@PostMapping(path = "/localDrive/{application-id}/fileNodes/copy")
-	public List<ResponseEntity<ResultBody>> copyFileNodes(@PathVariable("application-id") String applicationId,
+	public ResponseEntity<ResultBody> copyFileNodes(@PathVariable("application-id") String applicationId,
 			@RequestBody RequestInfo requestBody) throws IOException {
 
-		List<ResponseEntity<ResultBody>> responses = new ArrayList<ResponseEntity<ResultBody>>();
-
-		List<String> sourcePaths = requestBody.getSourcePaths();
+		
+		String[] sourcePaths = requestBody.getSourcePaths();
 		String targetPath = requestBody.getTargetPath();
 
-		for (int i = 0; i < sourcePaths.size(); i++) {
-			responses.add(_copyFileNode(applicationId, sourcePaths.get(i), targetPath));
-		}
-
-		return responses;
-
-	}
-
-	public ResponseEntity<ResultBody> _copyFileNode(String applicationId, String sourcePath, String targetPath)
-			throws IOException {
-
-		localDriveService.copyFileNode(applicationId, sourcePath, targetPath);
+		localDriveService.copyFileNodes(applicationId, sourcePaths, targetPath);
 
 		return ResponseEntity.status(HttpStatus.OK).body(ResultBody.success());
+
 	}
 
 }
