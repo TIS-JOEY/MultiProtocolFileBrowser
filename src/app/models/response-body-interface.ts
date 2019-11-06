@@ -1,8 +1,5 @@
 export interface ResponseBodyInterface {
   code?: string;
-  result?: {
-    columns: Array<string>,
-    values: {}
-  };
+  result?: any[];
   message?: string;
 }

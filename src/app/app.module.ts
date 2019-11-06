@@ -4,10 +4,12 @@ import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AgGridModule } from 'ag-grid-angular';
+import { SummaryTableComponent } from './components/summary-table/summary-table.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    SummaryTableComponent
   ],
   imports: [
     BrowserModule,
